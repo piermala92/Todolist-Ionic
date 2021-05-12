@@ -1,0 +1,135 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+
+    <ion-title>
+      To do list  {{todos.length}}
+    </ion-title>
+
+
+    <!-- RESET -->
+    <ion-buttons slot="secondary">
+      <ion-button (click)="resetTodos()">
+        RESET
+      </ion-button>
+    </ion-buttons> 
+
+
+    <!-- SORT BY DATE -->
+    <ion-buttons slot="secondary">
+      <ion-button (click)="sortByDate()">
+        Sort by Date
+      </ion-button>
+    </ion-buttons> 
+
+
+    <!-- SORT BY COMPLETED -->
+    <ion-buttons slot="secondary">
+      <ion-button (click)="sortByCompleted()">
+        Sort by Completed
+      </ion-button>
+    </ion-buttons> 
+
+
+    <!-- FILTER BY COMPLETED -->
+    <ion-buttons slot="secondary">
+      <ion-button (click)="filterByCompleted()">
+        Filter by Completed
+      </ion-button>
+    </ion-buttons> 
+
+
+
+    <!-- FILTER BY DUE DATE -->
+    <ion-buttons slot="secondary">
+      <ion-button (click)="filterByDueDate('PAST')">
+        Filter by Due Date
+      </ion-button>
+    </ion-buttons>
+
+
+
+
+
+    
+
+    <ion-buttons slot="secondary">
+      <ion-input type="text" placeholder="Search todo..." [(ngModel)]="inputSearchData" (keyup)="searchWithObservableFilter()" ></ion-input>  
+       
+      <ion-button id="addButton" (click)="addTodo()">
+        Add todo 
+      </ion-button>
+    </ion-buttons>
+    
+  </ion-toolbar>
+</ion-header>
+
+
+
+<ion-content [fullscreen]="true">
+
+  <div *ngIf="loading">
+    <ion-spinner text-center>LOADING...</ion-spinner>
+  </div>
+
+  
+
+  <ng-template [ngIf]="(inputSearchData != '' && inputSearchData != undefined) && todos.length == 0">
+    <ion-item>
+      <p>No todos match your search</p>
+    </ion-item>
+  </ng-template>
+
+  
+  <ng-template [ngIf]="todos.length > 0">
+
+    <div *ngFor="let todo of todosFetched | async">
+      <ion-card [ngClass]="setDoneStyle(todo,todo.done)" [hidden]="todo.hidden">
+        <ion-item [ngClass]="setDoneStyle(todo,todo.done)">
+          <ion-checkbox checked="{{todo.done}}" slot="start" (click)="setDone(todo.$key,!todo.done)"></ion-checkbox>
+          <ion-label>{{todo.title}}</ion-label>          
+                
+          <ion-button slot="end" [ngClass]="hideButton(todo.done)" [routerLink]="['/todolist-edit/',todo.$key]" >Edit</ion-button> <!--(click)="goToEditTodoPage(todo.$key)"-->
+          <ion-button slot="end" (click)="deleteTodo(todo.$key)">Delete</ion-button>
+    
+        </ion-item>
+
+        <ion-item [ngClass]="setDoneStyle(todo,todo.done)">
+          <ion-label><h6>Created: {{todo.created}}</h6></ion-label>       
+          <ion-label *ngIf="todo.dueDate != undefined && todo.dueDate != '' "><h6>Due date: {{todo.dueDate}}</h6></ion-label>
+        </ion-item>
+      
+        <ion-card-content>
+          {{todo.description}}
+        </ion-card-content>
+
+      </ion-card>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="todos.length == 0 && !loading && (inputSearchData == '' || inputSearchData == undefined)" >
+    <ion-item>
+      <p>No todos yet. Start by adding one</p>
+    </ion-item>
+  </ng-template>
+
+
+
+
+<hr>
+  <h2>TEST PERSON</h2>
+
+  <div *ngFor="let person of personList | async">
+    <ion-item>
+      <h3>{{person.name}}  -  {{person.lastName}}</h3><br>
+    </ion-item>
+  </div>
+
+</ion-content>
+
+
+
+
+
+<!-- NOTE-->
+
+<!-- ho modificato nell'ngFor iniziale todo : Todo[] con Todos : BehaviourSubject<Todo[]>([])-->
